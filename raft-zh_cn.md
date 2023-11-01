@@ -165,7 +165,7 @@ Raft 通过选举一个杰出的领导人，然后给予他全部的管理复制
 
 **请求投票（RequestVote）RPC**：
 
-![图-投票请求 ](./images/raft-图-投票请求.png =400x300)
+<img src="./images/raft-图-投票请求.png" width="400" height="300" />
 由候选人负责调用用来征集选票（5.2 节）
 
 | 参数 | 解释 |
