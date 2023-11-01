@@ -182,7 +182,7 @@ Raft 通过选举一个杰出的领导人，然后给予他全部的管理复制
 接收者实现：
 
 1. 如果`term < currentTerm`返回 false （5.2 节）
-2. 如果候选人的日志至少和自己一样新并且接收者日志中 votedFor 为空或者为 candidateId，那么就投票给他（5.2 节，5.4 节）
+2. 如果候选人的日志至少和自己一样新(lastLogTerm和lastLogIndex都大于等于接收者最新日志)并且接收者日志中 votedFor 为空或者为 candidateId，那么就投票给他（5.2 节，5.4 节）
 
 **所有服务器需遵守的规则**：
 
