@@ -234,8 +234,19 @@ Raft 通过选举一个杰出的领导人，然后给予他全部的管理复制
 * 一旦成为领导人：发送空的附加日志（AppendEntries）RPC（心跳）给其他所有的服务器；在一定的空余时间之后不停的重复发送，以防止跟随者超时（5.2 节）
 *  如果接收到来自客户端的请求：附加条目到本地日志中，在条目被应用到状态机后响应客户端（5.3 节）
 *  如果对于一个跟随者，最后日志条目的索引值大于等于 nextIndex（`lastLogIndex ≥ nextIndex`），则发送从 nextIndex 开始的所有日志条目：
-	* 如果成功：更新相应跟随者的 nextIndex 和 matchIndex
-	* 如果因为日志不一致而失败，则 nextIndex 递减并重试
+	* 如果成功：更新相应跟随者的 nextIndex 和 matchIndex (5.3节)
+	* 如果因为日志不一致而失败，则 nextIndex 递减并重试 (5.3节)
+>对于 Leader 要复制日志给某个 Follower F:<br/>
+>1. Leader 会维护一个 nextIndex,表示下次要发送给 F 的日志条目的索引位置。<br/>
+>2. Leader 会把 nextIndex 开始到最新的日志条目,发送给 F。<br/>
+>3. F 接收日志后,会与自己的日志进行对比:<br/>
+>   3.1 如果自己的最后一条日志的索引值 lastLogIndex >= nextIndex,表示自己本地日志与Leader已经一致了,已经包含了Leader要发送的日志。此时直接返回成功。<br/>
+>   3.2 如果 lastLogIndex < nextIndex,表示自己本地日志不完整,缺少日志,则会拒绝这次日志复制,并返回失败。<br/>
+>4. Leader 根据返回结果进行下一步操作:<br/>
+>   4.1 如果 F 返回成功,则把 F 的 nextIndex 和 matchIndex 更新为最新值。<br/>
+>   4.2 如果 F 返回失败,则减小 nextIndex 后重试,直到复制成功。<br/>
+>所以您的理解是正确的。Leader 通过调整 nextIndex,来控制日志复制的位置和范围,以此来达到日志复制和一致性的目的。<br/>
+
 * 假设存在 N 满足`N > commitIndex`，使得大多数的 `matchIndex[i] ≥ N`以及`log[N].term == currentTerm` 成立，则令 `commitIndex = N`（5.3 和 5.4 节）
 
 ![图 2](./images/raft-图2.png)
