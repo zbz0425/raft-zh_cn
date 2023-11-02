@@ -237,7 +237,7 @@ Raft 通过选举一个杰出的领导人，然后给予他全部的管理复制
 	* 如果成功：更新相应跟随者的 nextIndex 和 matchIndex (5.3节)
 	* 如果因为日志不一致而失败，则 nextIndex 递减并重试 (5.3节)
 >对于 Leader 要复制日志给某个Follower F跟随者:<br/>
->1. Leader 会维护一个 nextIndex,表示下次要发送给 F节点 的日志条目的索引位置。<br/>
+>1. Leader 会维护一个 nextIndex,表示下次要发送给 F跟随者 的日志条目的索引位置。<br/>
 >2. Leader 会把 nextIndex 开始到最新的日志条目,发送给 F跟随者。<br/>
 >3. F跟随者 接收日志后,会与自己的日志进行对比:<br/>
 >   3.1 如果自己的最后一条日志的索引值 lastLogIndex >= nextIndex,表示自己本地日志与Leader已经一致了,已经包含了Leader要发送的日志。此时直接返回成功。<br/>
