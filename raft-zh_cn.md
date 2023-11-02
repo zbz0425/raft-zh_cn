@@ -248,6 +248,14 @@ Raft 通过选举一个杰出的领导人，然后给予他全部的管理复制
 >所以您的理解是正确的。Leader 通过调整 nextIndex,来控制日志复制的位置和范围,以此来达到日志复制和一致性的目的。<br/>
 
 * 假设存在 N 满足`N > commitIndex`，使得大多数的 `matchIndex[i] ≥ N`以及`log[N].term == currentTerm` 成立，则令 `commitIndex = N`（5.3 和 5.4 节）
+> 在 Raft 中,leader 需要判断什么时候更新修改commitIndex。
+> 具体逻辑是:<br/>
+> 1. leader 会遍历所有 follower 的 matchIndex,找到一个最大的 N,满足:<br/>
+> (1) N > commitIndex,N 比现有的提交点更进一步<br/>
+> (2) 至少有大多数的 follower(半数以上)的 matchIndex 大于等于 N<br/>
+> (3) log[N] 的任期号等于当前 leader 的任期号<br/>
+> 2. 如果找到这样的 N,那么就可以把 commitIndex 安全地提升到 N。<br/>
+> 这个逻辑确保了至少有半数以上的节点已经包含了 log[N],并且这条日志在 leader 当前的任期内创建,所以根据 Raft 算法的多数原则,log[N]之前的日志可以被提交。<br/>
 
 ![图 2](./images/raft-图2.png)
 
